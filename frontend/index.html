@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaskFlow — Менеджер задач</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Nunito:wght@400;500;600;700&subset=cyrillic&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="noise"></div>
+
+  <div class="app">
+
+    <header class="header">
+      <div class="header-top">
+        <div class="logo">
+          <span class="logo-dot"></span>
+          TaskFlow
+        </div>
+        <div class="stats-row">
+          <div class="stat-pill" id="stat-all">
+            <span id="count-all">0</span>
+            <span class="stat-label">всего</span>
+          </div>
+          <div class="stat-pill pending" id="stat-pending">
+            <span id="count-pending">0</span>
+            <span class="stat-label">активных</span>
+          </div>
+          <div class="stat-pill done" id="stat-done">
+            <span id="count-done">0</span>
+            <span class="stat-label">выполнено</span>
+          </div>
+        </div>
+      </div>
+      <h1 class="headline">Список <em>задач</em></h1>
+      <p class="subheadline">Добавляйте, отмечайте выполненными и удаляйте задачи</p>
+    </header>
+
+    <!-- СТАТУС ПОДКЛЮЧЕНИЯ -->
+    <div id="server-status" class="server-status checking">
+      <span class="status-dot"></span>
+      <span id="status-text">Подключение к серверу...</span>
+    </div>
+
+    <section class="add-section">
+      <div class="section-title">
+        <span class="section-icon">✦</span>
+        Новая задача
+      </div>
+      <form id="add-form" class="add-form">
+        <div class="fields">
+          <div class="field-group main-field">
+            <label for="title">
+              Название задачи <span class="required">*</span>
+            </label>
+            <input id="title" name="title" type="text" 
+              placeholder="Например: купить продукты, написать отчёт..." 
+              autocomplete="off" required />
+          </div>
+          <div class="field-group field-small">
+            <label for="user_id">
+              ID пользователя <span class="required">*</span>
+            </label>
+            <input id="user_id" name="user_id" type="number" 
+              placeholder="1" min="1" required />
+            <span class="field-hint">числовой ID</span>
+          </div>
+          <div class="field-group field-small">
+            <label for="category_id">
+              Категория
+            </label>
+            <input id="category_id" name="category_id" type="number" 
+              placeholder="необязательно" min="1" />
+            <span class="field-hint">можно не заполнять</span>
+          </div>
+        </div>
+        <div class="form-footer">
+          <span class="form-hint">
+            <span class="required">*</span> — обязательные поля
+          </span>
+          <button type="submit" class="btn-add" id="submit-btn">
+            <span class="btn-icon">+</span>
+            <span class="btn-text">Добавить задачу</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="tasks-section">
+      <div class="tasks-header">
+        <div class="section-title">
+          <span class="section-icon">◈</span>
+          <span id="filter-label">Все задачи</span>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-btn active" data-filter="all">
+            Все
+          </button>
+          <button class="filter-btn" data-filter="0">
+            Активные
+          </button>
+          <button class="filter-btn" data-filter="1">
+            Выполненные
+          </button>
+        </div>
+      </div>
+
+      <!-- ИНСТРУКЦИЯ (показывается когда задачи есть) -->
+      <div id="how-to" class="how-to hidden">
+        <div class="how-to-item">
+          <span class="how-circle">○</span> — нажмите, чтобы <strong>отметить выполненной</strong>
+        </div>
+        <div class="how-to-item">
+          <span class="how-x">✕</span> — нажмите, чтобы <strong>удалить</strong>
+        </div>
+      </div>
+
+      <div id="task-list" class="task-list">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Загрузка...</p>
+        </div>
+      </div>
+
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-icon">✦</div>
+        <p id="empty-title">Задач нет</p>
+        <span id="empty-sub">Добавьте первую задачу с помощью формы выше</span>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
