@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaskFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Nunito:wght@400;500;600;700&subset=cyrillic&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="app">
+
+  <!-- АВТОРИЗАЦИЯ -->
+  <div id="auth-section" class="auth-wrap">
+    <div id="login-box" class="auth-box">
+      <div class="auth-title">Вход в TaskFlow</div>
+      <div class="field">
+        <label>Имя пользователя</label>
+        <input id="l-username" type="text" placeholder="username" autocomplete="username"/>
+      </div>
+      <div class="field">
+        <label>Пароль</label>
+        <input id="l-password" type="password" placeholder="••••••" autocomplete="current-password"/>
+      </div>
+      <button class="btn btn-primary" id="btn-login" onclick="doLogin()">Войти</button>
+      <div class="auth-switch" style="margin-top:16px">
+        Нет аккаунта? <span onclick="showRegister()">Зарегистрироваться</span>
+      </div>
+    </div>
+
+    <div id="register-box" class="auth-box hidden">
+      <div class="auth-title">Регистрация</div>
+      <div class="field">
+        <label>Имя пользователя</label>
+        <input id="r-username" type="text" placeholder="только буквы, цифры и _"/>
+        <span class="field-error hidden" id="r-username-err"></span>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input id="r-email" type="email" placeholder="example@mail.com"/>
+        <span class="field-error hidden" id="r-email-err"></span>
+      </div>
+      <div class="field">
+        <label>Пароль (минимум 6 символов)</label>
+        <input id="r-password" type="password" placeholder="••••••"/>
+        <span class="field-error hidden" id="r-pass-err"></span>
+      </div>
+      <button class="btn btn-primary" onclick="doRegister()">Создать аккаунт</button>
+      <div class="auth-switch" style="margin-top:16px">
+        Уже есть аккаунт? <span onclick="showLogin()">Войти</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
+  <div id="main-section" class="hidden">
+
+    <div class="header">
+      <div class="logo"><span class="logo-dot"></span>TaskFlow</div>
+      <div class="user-info">
+        <span id="username-display"></span>
+        <button class="btn-logout" onclick="doLogout()">Выйти</button>
+      </div>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num" id="s-total">0</div>
+        <div class="stat-label">Всего</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="s-active" style="color:var(--warning)">0</div>
+        <div class="stat-label">Активных</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="s-done" style="color:var(--accent)">0</div>
+        <div class="stat-label">Выполнено</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="s-high" style="color:var(--danger)">0</div>
+        <div class="stat-label">Срочных</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="s-cats">0</div>
+        <div class="stat-label">Категорий</div>
+      </div>
+    </div>
+
+    <!-- ПРОГРЕСС-БАР -->
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-label" id="progress-label">0% выполнено</span>
+    </div>
+
+    <!-- КАТЕГОРИИ -->
+    <div class="cats-section">
+      <div class="section-head"><span class="section-title">Категории</span></div>
+      <div id="cats-list" class="cats-list"></div>
+      <div class="add-cat">
+        <input id="new-cat" type="text" placeholder="Новая категория..." maxlength="50"
+               onkeydown="if(event.key==='Enter') addCategory()"/>
+        <button class="btn-sm" onclick="addCategory()">+ Добавить</button>
+      </div>
+    </div>
+
+    <!-- ФОРМА ДОБАВЛЕНИЯ ЗАДАЧИ -->
+    <div class="add-form">
+      <div class="section-title" style="margin-bottom:14px">✦ Новая задача</div>
+      <div class="form-grid">
+        <div>
+          <span class="inp-label">Название *</span>
+          <input class="inp" id="t-title" type="text" placeholder="Что нужно сделать?" maxlength="200"
+                 onkeydown="if(event.key==='Enter') addTask()"/>
+        </div>
+        <div>
+          <span class="inp-label">Приоритет</span>
+          <select class="inp" id="t-priority">
+            <option value="1">🟢 Низкий</option>
+            <option value="2" selected>🟡 Средний</option>
+            <option value="3">🔴 Высокий</option>
+          </select>
+        </div>
+        <div>
+          <span class="inp-label">Категория</span>
+          <select class="inp" id="t-category">
+            <option value="">— без категории —</option>
+          </select>
+        </div>
+        <div>
+          <span class="inp-label">Срок выполнения</span>
+          <input class="inp" id="t-due" type="date"/>
+        </div>
+      </div>
+      <div style="margin-bottom:14px">
+        <span class="inp-label">Описание (необязательно)</span>
+        <input class="inp" id="t-desc" type="text" placeholder="Подробности..." maxlength="1000"/>
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-primary" style="width:auto;padding:11px 28px" id="btn-add" onclick="addTask()">
+          + Добавить задачу
+        </button>
+      </div>
+    </div>
+
+    <!-- ФИЛЬТРЫ И ПОИСК -->
+    <div class="filters-panel">
+      <!-- Строка 1: поиск + кнопка сброса -->
+      <div class="filters-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input id="search-inp" type="text" placeholder="Поиск по названию или описанию..." oninput="onSearch()"/>
+          <button class="search-clear hidden" id="search-clear" onclick="clearSearch()">✕</button>
+        </div>
+        <button class="btn-reset" id="btn-reset" onclick="resetAllFilters()" title="Сбросить все фильтры">
+          <span>↺</span> Сброс
+        </button>
+      </div>
+
+      <!-- Строка 2: статус + приоритет + сортировка -->
+      <div class="filters-row filters-controls">
+        <!-- Статус -->
+        <div class="filter-group">
+          <span class="filter-group-label">Статус</span>
+          <div class="filter-tabs">
+            <button class="ftab active" data-f="all" onclick="setFilter('all',this)">Все</button>
+            <button class="ftab" data-f="0" onclick="setFilter('0',this)">Активные</button>
+            <button class="ftab" data-f="1" onclick="setFilter('1',this)">Готовые</button>
+          </div>
+        </div>
+
+        <!-- Приоритет -->
+        <div class="filter-group">
+          <span class="filter-group-label">Приоритет</span>
+          <div class="filter-tabs">
+            <button class="ptab active" data-p="all" onclick="setPriority('all',this)">Все</button>
+            <button class="ptab p1" data-p="1" onclick="setPriority('1',this)">🟢</button>
+            <button class="ptab p2" data-p="2" onclick="setPriority('2',this)">🟡</button>
+            <button class="ptab p3" data-p="3" onclick="setPriority('3',this)">🔴</button>
+          </div>
+        </div>
+
+        <!-- Дата -->
+        <div class="filter-group">
+          <span class="filter-group-label">Период</span>
+          <select class="inp-sm" id="date-filter" onchange="setDateFilter(this.value)">
+            <option value="all">Все время</option>
+            <option value="today">Сегодня</option>
+            <option value="week">Эта неделя</option>
+            <option value="month">Этот месяц</option>
+          </select>
+        </div>
+
+        <!-- Сортировка -->
+        <div class="filter-group">
+          <span class="filter-group-label">Сортировка</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select class="inp-sm" id="sort-by" onchange="setSort(this.value)">
+              <option value="created_at">По дате</option>
+              <option value="priority">По приоритету</option>
+              <option value="title">По названию</option>
+              <option value="status">По статусу</option>
+            </select>
+            <button class="sort-dir" id="sort-dir" onclick="toggleSortDir()" title="Порядок сортировки">↓</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Активные фильтры (теги) -->
+      <div id="active-filters" class="active-filters hidden"></div>
+    </div>
+
+    <div id="how-to" class="how-to hidden">
+      <span>○ — отметить выполненной</span>
+      <span>✎ — редактировать</span>
+      <span>✕ — удалить</span>
+    </div>
+
+    <!-- СПИСОК ЗАДАЧ -->
+    <div id="task-list" class="task-list">
+      <div class="loading"><div class="spinner"></div><p>Загрузка...</p></div>
+    </div>
+    <div id="empty" class="empty hidden">
+      <div class="empty-icon">✦</div>
+      <p id="empty-title">Задач нет</p>
+      <span id="empty-sub">Добавьте первую задачу выше</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ -->
+<div id="edit-modal" class="hidden modal-overlay" onclick="onOverlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-title">✎ Редактировать задачу</div>
+    <input type="hidden" id="edit-id">
+    <div class="field">
+      <label>Название *</label>
+      <input id="edit-title" type="text" maxlength="200" placeholder="Название задачи"/>
+    </div>
+    <div class="field">
+      <label>Описание</label>
+      <textarea id="edit-desc" rows="3" placeholder="Подробности..." maxlength="1000"
+        style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 13px;font-family:var(--font-b);font-size:14px;color:var(--text);outline:none;width:100%;resize:vertical;transition:border-color .2s;"></textarea>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div class="field" style="flex:1;min-width:120px">
+        <label>Приоритет</label>
+        <select id="edit-priority" class="inp">
+          <option value="1">🟢 Низкий</option>
+          <option value="2">🟡 Средний</option>
+          <option value="3">🔴 Высокий</option>
+        </select>
+      </div>
+      <div class="field" style="flex:1;min-width:120px">
+        <label>Категория</label>
+        <select id="edit-category" class="inp"></select>
+      </div>
+      <div class="field" style="flex:1;min-width:120px">
+        <label>Срок выполнения</label>
+        <input id="edit-due" type="date" class="inp"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+      <button class="btn-logout" onclick="closeEditModal()">Отмена</button>
+      <button class="btn btn-primary" style="width:auto;padding:11px 28px" onclick="saveEdit()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>
